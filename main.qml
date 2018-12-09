@@ -28,8 +28,8 @@ ApplicationWindow {
         imageCapture {
 
             onImageCaptured: {
-               imageSource = preview  // Show the preview in an Image
-                console.log(preview)
+                imageSource = preview  // Show the preview in an Image
+                //console.log(preview)
                 //console.log(displayName)
             }
 
@@ -44,7 +44,7 @@ ApplicationWindow {
 
     CameraView{
         id: cameraViewForm
-        objectName: "cameraViewForm"
+        objectName: "cameraView"
         width: parent.width
         height: parent.height
         camera: camera

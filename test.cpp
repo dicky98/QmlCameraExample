@@ -17,7 +17,7 @@ void Test::qmlSlot(const QString& message)
     qDebug() << "C++ called: " << message;
 }
 
-void Test::handleFrame(QVideoFrame f)
+void Test::handleFrame(QImage f)
 {
     //std::cout<<"!!"<<std::endl;
     qDebug() << "cameraView";

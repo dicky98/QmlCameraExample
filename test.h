@@ -17,7 +17,7 @@ public:
 
 public slots:
     void qmlSlot(const QString& message);
-    void handleFrame(QVideoFrame f);
+    void handleFrame(QImage f);
     void displayImage(int index, QImage img);
     void displayFrame(int index, const QVideoFrame &frame);
 

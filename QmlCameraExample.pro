@@ -1,12 +1,16 @@
-QT += quick qml multimedia
+QT += quick qml multimedia widgets
 
 CONFIG += c++11
 
 SOURCES += main.cpp \
-    test.cpp
+    test.cpp \
+    cameraframegrabber.cpp \
+    mycamera.cpp
 
 HEADERS += \
-    test.h
+    test.h \
+    cameraframegrabber.h \
+    mycamera.h
 
 RESOURCES += qml.qrc
 
@@ -31,3 +35,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 #qnx: target.path = /tmp/$${TARGET}/bin
 #else: unix:!android: target.path = /opt/$${TARGET}/bin
 #!isEmpty(target.path): INSTALLS += target
+
+
+INCLUDEPATH += C:\\3rdLibrary\\opencv3.4\\include
+LIBS += -LC:\\3rdLibrary\\opencv3.4\\x64\\vc14\\lib

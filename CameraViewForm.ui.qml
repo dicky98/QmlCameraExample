@@ -12,6 +12,7 @@ Item {
         width: 300
         height: 300
     }
+
     VideoOutput {
         id: cameraOutputView
         visible: true
@@ -21,7 +22,7 @@ Item {
         x: 0
         y: 0
 
-        source: camera
+        //source: camera
         autoOrientation: true
     }
 }
