@@ -18,29 +18,40 @@ void PixmapImage::setImage(QImage *image)
 
 void PixmapImage::paint(QPainter *painter)
 {
+    //painter->drawImage(0, 0, frame);
     painter->drawPixmap(0, 0, width(), height(), pixmap);
 }
 
-void PixmapImage::onGetFrame(QImage image)
+void PixmapImage::onGetFrame(QImage &image)
 {
-    qDebug() << "onGetFrame";
     if(!image.isNull()){
-        //setSize(image.size());
-        //setWidth(image.size().width());
-        //setHeight(image.size().height());
-        //pixmap = QPixmap::fromImage(image);
-        cv::Mat frameMat(image.height(), image.width(), CV_8UC4, (void*)image.bits(), image.bytesPerLine());
-        cv::imshow("frameMat",frameMat);
-        cv::waitKey(1);
-        //qDebug() << image.format();
-        //qDebug() << image.size();
-        //qDebug() << pixmap.size();
-        //qDebug() << width() << ", " << height();
+        //cv::Mat frameMat(image.height(), image.width(), CV_8UC4, (void*)image.bits(), image.bytesPerLine());
+        //cv::imshow("frameMat",frameMat);
+        //cv::waitKey(1);
 
-        //update();
+        QImage frameTmp;
+        QSize parentSize = QSize(this->parent()->property("width").toDouble(),this->parent()->property("height").toDouble());
+        if(parentSize.width() >= image.width()){
+            //frameTmp = image.scaledToHeight(parentSize.height());
+        }
+        else{
+            //frameTmp = image.scaledToWidth(parentSize.width());
+        }
+
+        pixmap = QPixmap::fromImage(image.copy());
+        setSize(parentSize);
+
+        frameCounter++;
+        std::time_t timeNow = std::time(0) - timeBegin;
+        if (timeNow - tick >= 1) {
+            tick++;
+            fps = frameCounter;
+            frameCounter = 0;
+        }
+        qDebug() << fps;
     }
     else{
-        pixmap.load("C:/Users/Zong-Ye/Desktop/16-1.PNG");
+        //pixmap.load("C:/Users/Zong-Ye/Desktop/16-1.PNG");
     }
     update();
 }

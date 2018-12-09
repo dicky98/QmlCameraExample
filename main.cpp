@@ -54,7 +54,7 @@ int main(int argc, char *argv[])
         camera_ = qvariant_cast<QCamera*>(qmlCamera->property("mediaObject"));
         _cameraFrameGrabber = new CameraFrameGrabber();
         camera_->setViewfinder(_cameraFrameGrabber);
-        QObject::connect(_cameraFrameGrabber, SIGNAL(frameAvailable(QImage)), pixmapImage, SLOT(onGetFrame(QImage)));
+        QObject::connect(_cameraFrameGrabber, SIGNAL(frameAvailable(QImage&)), pixmapImage, SLOT(onGetFrame(QImage&)));
         //QObject::connect(_cameraFrameGrabber, SIGNAL(frameAvailable(QImage)), cameraView, SLOT(onCppSignal(QVariant)));
     }
     else

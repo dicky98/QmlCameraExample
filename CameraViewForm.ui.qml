@@ -18,9 +18,11 @@ Item {
     PixmapImage {
         id: pixmapImage
         objectName: "pixmapImage"
-        width: 640
-        height: 480
+        anchors.horizontalCenter: parent.horizontalCenter
         //anchors.fill: parent
+        //width: parent.width
+        //height: parent.height
+        //autoOrientation: true
     }
 
     VideoOutput {
