@@ -16,7 +16,7 @@ public:
     bool present(const QVideoFrame &frame);
 
 signals:
-    void frameAvailable(QVariant frame);
+    void frameAvailable(QImage frame);
     void cppSignal ( QVariant msg ) ;
 
 public slots:

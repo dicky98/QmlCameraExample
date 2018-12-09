@@ -57,12 +57,14 @@ bool CameraFrameGrabber::present(const QVideoFrame &frame)
                            cloneFrame.height(),
                            QVideoFrame::imageFormatFromPixelFormat(cloneFrame.pixelFormat()));
 
-        cv::Mat frameMat(frame.height(), frame.width(), CV_8UC4, (void*)frame.bits(), frame.bytesPerLine());
-        cv::imshow("frameMat",frameMat);
-        cv::waitKey(1);
+        //cv::Mat frameMat(frame.height(), frame.width(), CV_8UC4, (void*)frame.bits(), frame.bytesPerLine());
+        //cv::imshow("frameMat",frameMat);
+        //cv::waitKey(1);
 
-        emit frameAvailable((QVariant)image);
-        emit cppSignal("image");
+        //qDebug() << image.format();
+        //qDebug() << cloneFrame.pixelFormat();
+        emit frameAvailable(image);
+        //emit cppSignal("image");
         cloneFrame.unmap();
         return true;
     }

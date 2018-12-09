@@ -7,12 +7,10 @@
 #include <QDebug>
 
 #include <QCamera>
-#include <QVideoProbe>
-#include <QCameraImageCapture>
 
 #include "cameraframegrabber.h"
 #include "test.h"
-#include "mycamera.h"
+#include "pixmapimage.h"
 
 /*#pragma comment(lib, "opencv_core340d.lib")
 #pragma comment(lib, "opencv_imgcodecs340d.lib")
@@ -21,31 +19,19 @@
 #pragma comment(lib, "opencv_highgui340d.lib")*/
 #pragma comment(lib, "opencv_world340d.lib")
 
-#include <QApplication>
-
 //http://blog.51cto.com/9291927/1975383
 //https://blog.csdn.net/henreash/article/details/8002147
 int main(int argc, char *argv[])
 {
-    QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
-    QApplication app(argc, argv);
-    //QApplication::setAttribute(Qt::AA_UseDesktopOpenGL, true);
+    QGuiApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
+    QGuiApplication app(argc, argv);
+    //QGuiApplication::setAttribute(Qt::AA_UseDesktopOpenGL, true);
     QGuiApplication::setAttribute(Qt::AA_UseOpenGLES, true);
-    //QApplication::setAttribute(Qt::AA_UseSoftwareOpenGL, true);
+    //QGuiApplication::setAttribute(Qt::AA_UseSoftwareOpenGL, true);
+
+    qmlRegisterType<PixmapImage>("PixmapImage", 1, 0, "PixmapImage");
 
     QQmlApplicationEngine engine;
-
-    //qmlRegisterUncreatableType<MyCamera>("MyCamera", 1, 0, "MyCamera",
-    //        QStringLiteral("MyCamera should not be created in QML"));
-    //MyCamera *myCamera = new MyCamera();
-    //QCameraImageCapture* image_capture_= new QCameraImageCapture(myCamera);
-    //myCamera->setProperty("id","myCamera");
-    //myCamera->setObjectName("myCamera");
-    //myCamera->setCaptureMode(QCamera::CaptureStillImage);
-    //myCamera->dumpObjectInfo();
-    //image_capture_->capture();
-    //engine.rootContext()->setContextProperty(QStringLiteral("myCamera"), myCamera);
-
 
     engine.load(QUrl(QLatin1String("qrc:/main.qml")));
     if (engine.rootObjects().isEmpty())
@@ -59,26 +45,17 @@ int main(int argc, char *argv[])
     /////////////////////////
     QCamera *camera_;
     CameraFrameGrabber* _cameraFrameGrabber;
-    //QCameraImageCapture* image_capture_;
 
     QObject *qmlCamera = rootobject->findChild<QObject*>("camera");
     QObject *cameraView = rootobject->findChild<QObject*>("cameraView");
-
-    if(qmlCamera != nullptr && cameraView!= nullptr)
+    QObject *pixmapImage = rootobject->findChild<QObject*>("pixmapImage");
+    if(qmlCamera != nullptr && pixmapImage!= nullptr)
     {
         camera_ = qvariant_cast<QCamera*>(qmlCamera->property("mediaObject"));
-        qmlCamera->dumpObjectInfo();
-        //image_capture_ = new QCameraImageCapture(camera_);
-        //qDebug() << image_capture_->isCaptureDestinationSupported(QCameraImageCapture::CaptureToBuffer);
-        //image_capture_->setCaptureDestination(QCameraImageCapture::CaptureToBuffer);
-
-        /////////////////////////
-        //camera_ = new QCamera();
         _cameraFrameGrabber = new CameraFrameGrabber();
         camera_->setViewfinder(_cameraFrameGrabber);
-        QObject::connect(_cameraFrameGrabber, SIGNAL(frameAvailable(QVariant)), cameraView, SLOT(onCppSignal(QVariant)));
-
-        //QObject::connect(_cameraFrameGrabber,SIGNAL(cppSignal(QVariant)),cameraView,SLOT(onCppSignal(QVariant))) ;
+        QObject::connect(_cameraFrameGrabber, SIGNAL(frameAvailable(QImage)), pixmapImage, SLOT(onGetFrame(QImage)));
+        //QObject::connect(_cameraFrameGrabber, SIGNAL(frameAvailable(QImage)), cameraView, SLOT(onCppSignal(QVariant)));
     }
     else
     {

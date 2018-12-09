@@ -5,12 +5,12 @@ CONFIG += c++11
 SOURCES += main.cpp \
     test.cpp \
     cameraframegrabber.cpp \
-    mycamera.cpp
+    pixmapimage.cpp
 
 HEADERS += \
     test.h \
     cameraframegrabber.h \
-    mycamera.h
+    pixmapimage.h
 
 RESOURCES += qml.qrc
 

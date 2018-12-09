@@ -5,11 +5,12 @@ CameraViewForm {
     Component.onCompleted: {
     }
 
-    function onCppSignal ( msg ) {
+    function onCppSignal ( image ) {
         //console.log("CppSignal Recieve : " + msg) ;
-        //photoPreview.source = msg;
+        //photoPreview.source = image;
         if(camera.imageCapture.ready)
-            camera.imageCapture.capture()
+            //camera.imageCapture.capture()
+            pixmapImage.setImage( image )
     }
     /*
     property int s: 0
