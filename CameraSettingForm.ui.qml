@@ -10,6 +10,7 @@ Item {
     property alias cameraListComboBox: cameraListComboBox
     property alias cameraSupportedViewfinderResolutionsComboBox: cameraSupportedViewfinderResolutionsComboBox
     property alias cameraSupportedViewfinderFrameRateRangesComboBox: cameraSupportedViewfinderFrameRateRangesComboBox
+    property alias cameraViewRotateSettingComboBox: cameraViewRotateSettingComboBox
 
     property point moveFrom
     property point moveTo
@@ -17,18 +18,18 @@ Item {
     Rectangle {
         id: cameraSettingWindow
         visible: false
-        opacity: 0.5
+        //opacity: 0.5
         width: parent.width
         height: parent.height
-        color: "red"
+        color: "white"
 
         ColumnLayout {
-            width: parent.width
+            anchors.horizontalCenter: parent.horizontalCenter
+            width: parent.width/2
             Text {
                 id: planetText
                 //anchors.bottom: parent.bottom
                 //anchors.topMargin: 20
-                anchors.horizontalCenter: parent.horizontalCenter
 
                 font.family: "Helvetica"
                 font.pixelSize: 32
@@ -38,30 +39,60 @@ Item {
                 text: "<p>" + "Setting!" + "</p>"
                 transformOrigin: Item.Center
             }
-            ComboBox {
-                id: cameraListComboBox
-                width: parent.width
-                anchors.horizontalCenter: parent.horizontalCenter
+            RowLayout {
+                Text {
+                    //anchors.bottom: parent.bottom
+                    //anchors.topMargin: 20
 
-                //model: QtMultimedia.availableCameras
-                currentIndex: 0
+                    //font.family: "Helvetica"
+                    //font.pixelSize: 32
+                    //font.weight: Font.Light
+                    //color: "white"
 
-                //onCurrentIndexChanged: {}
+                    text: "Camera:          "
+                    transformOrigin: Item.Center
+                }
+                ComboBox {
+                    id: cameraListComboBox
+                    Layout.fillWidth: true
+                    //anchors.horizontalCenter: parent.horizontalCenter
+                    currentIndex: 0
+                }
             }
 
-            ComboBox {
-                id: cameraSupportedViewfinderResolutionsComboBox
-                width: parent.width
-                anchors.horizontalCenter: parent.horizontalCenter
-                currentIndex: 0
+            RowLayout {
+                Text {
+                    text: "Resoultion:     "
+                }
+                ComboBox {
+                    id: cameraSupportedViewfinderResolutionsComboBox
+                    Layout.fillWidth: true
+                    currentIndex: 0
+                }
             }
 
-            ComboBox {
-                id: cameraSupportedViewfinderFrameRateRangesComboBox
-                width: parent.width
-                anchors.horizontalCenter: parent.horizontalCenter
-                currentIndex: 0
+            RowLayout {
+                Text {
+                    text: "Rotate Image: "
+                }
+                ComboBox {
+                    id: cameraViewRotateSettingComboBox
+                    Layout.fillWidth: true
+                    currentIndex: 0
+                }
             }
+
+            RowLayout {
+                Text {
+                    text: "Video Fps:      "
+                }
+                ComboBox {
+                    id: cameraSupportedViewfinderFrameRateRangesComboBox
+                    Layout.fillWidth: true
+                    currentIndex: 0
+                }
+            }
+
         }
     }
 }

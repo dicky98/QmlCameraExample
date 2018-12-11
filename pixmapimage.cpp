@@ -1,6 +1,6 @@
 ﻿#include "pixmapimage.h"
 #include <QDebug>
-//#include <opencv/cv.hpp>
+#include <opencv/cv.hpp>
 
 PixmapImage::PixmapImage(QQuickItem *parent) :
     QQuickPaintedItem(parent)
@@ -20,26 +20,39 @@ void PixmapImage::paint(QPainter *painter)
 {
     //painter->drawImage(0, 0, frame);
     painter->drawPixmap(0, 0, width(), height(), pixmap);
+    update();
 }
 
 void PixmapImage::onGetFrame(QImage &image)
 {
     if(!image.isNull()){
-        //cv::Mat frameMat(image.height(), image.width(), CV_8UC4, (void*)image.bits(), image.bytesPerLine());
-        //cv::imshow("frameMat",frameMat);
-        //cv::waitKey(1);
-
-        QImage frameTmp;
+        QImage frameTmp = image.copy();
         QSize parentSize = QSize(this->parent()->property("width").toDouble(),this->parent()->property("height").toDouble());
-        if(parentSize.width() >= image.width()){
-            //frameTmp = image.scaledToHeight(parentSize.height());
-        }
-        else{
-            //frameTmp = image.scaledToWidth(parentSize.width());
+        if(parentSize.width() >= frameTmp.width()){
+            frameTmp = frameTmp.scaledToHeight(parentSize.height());
+            //frameTmp = image.copy();
         }
 
-        pixmap = QPixmap::fromImage(image.copy());
-        setSize(parentSize);
+        if(parentSize.width() < frameTmp.width()){
+            frameTmp = frameTmp.scaledToWidth(parentSize.width());
+            //frameTmp = image.copy();
+        }
+
+        if(parentSize.height() >= frameTmp.height()){
+            frameTmp = frameTmp.scaledToWidth(parentSize.width());
+            //frameTmp = image.copy();
+        }
+
+        if(parentSize.height() < frameTmp.height()){
+            frameTmp = frameTmp.scaledToHeight(parentSize.height());
+            //frameTmp = image.copy();
+        }
+
+        QTransform rotating;
+        rotating.rotate(180);
+        frameTmp = frameTmp.transformed(rotating);
+        pixmap = QPixmap::fromImage(frameTmp);
+        setSize(frameTmp.size());
 
         frameCounter++;
         std::time_t timeNow = std::time(0) - timeBegin;
@@ -49,9 +62,12 @@ void PixmapImage::onGetFrame(QImage &image)
             frameCounter = 0;
         }
         //qDebug() << fps;
+
+        //cv::Mat frameMat(frameTmp.height(), frameTmp.width(), CV_8UC4, (void*)frameTmp.bits(), frameTmp.bytesPerLine());
+        //cv::imshow("frameMat",frameMat);
+        //cv::waitKey(1);
     }
     else{
         //pixmap.load("C:/Users/Zong-Ye/Desktop/16-1.PNG");
     }
-    update();
 }

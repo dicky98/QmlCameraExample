@@ -7,13 +7,14 @@ CameraSettingForm {
     property var deviceIdList: []
     property var cameraResolutionList: []
     property var cameraFrameRateRangesList: []
+    property var selectedResolution
     //property int selectedCameraResolutionIndex: -1
     //property int selectedCameraFrameRateRangesIndex: -1
     //property list cameraFrameRateRangesList: camera.supportedViewfinderFrameRateRanges()
 
     Component.onCompleted: {
         //cameraList
-        console.log(JSON.stringify(QtMultimedia.availableCameras))
+        //console.log(JSON.stringify(QtMultimedia.availableCameras))
         cameraList = QtMultimedia.availableCameras
         for(var index = 0 ; index < cameraList.length ; index++){
             cameraListModel.append({displayName: cameraList[index].displayName})
@@ -27,9 +28,15 @@ CameraSettingForm {
         for(var index = 0 ; index < cameraResolutionList.length ; index++){
             var displayText = cameraResolutionList[index].width + "x" + cameraResolutionList[index].height
             cameraResolutionListModel.append({displayText: displayText})
+            //if(camera.viewfinder.resolution === displayText){
+            //    print("!!")
+            //    selectedResolution = displayText
+            //}
         }
         cameraSupportedViewfinderResolutionsComboBox.textRole = "displayText"
         cameraSupportedViewfinderResolutionsComboBox.model = cameraResolutionListModel
+        //cameraSupportedViewfinderResolutionsComboBox.currentIndex = selectedResolution
+        //cameraSupportedViewfinderResolutionsComboBox.currentText = selectedResolution
 
         //cameraFrameRateRangesList
         cameraFrameRateRangesListModel.clear()
@@ -41,6 +48,9 @@ CameraSettingForm {
 
         cameraSupportedViewfinderFrameRateRangesComboBox.textRole = "displayText"
         cameraSupportedViewfinderFrameRateRangesComboBox.model = cameraFrameRateRangesListModel
+
+        ///init
+
     }
 
     ListModel {

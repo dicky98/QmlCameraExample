@@ -47,8 +47,6 @@ ApplicationWindow {
         objectName: "cameraView"
         width: parent.width
         height: parent.height
-        camera: camera
-        photoPreview.source: imageSource
     }
 
     CameraSetting{
