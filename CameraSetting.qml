@@ -1,64 +1,56 @@
 ﻿import QtQuick 2.4
-import QtMultimedia 5.8
+import QtMultimedia 5.4
 
 CameraSettingForm {
     property bool bShowMenu: false
+    property var cameraList: []
+    property var deviceIdList: []
     property var cameraResolutionList: []
     property var cameraFrameRateRangesList: []
-    property int selectedCameraResolutionIndex: -1
-    property int selectedCameraFrameRateRangesIndex: -1
+    //property int selectedCameraResolutionIndex: -1
+    //property int selectedCameraFrameRateRangesIndex: -1
     //property list cameraFrameRateRangesList: camera.supportedViewfinderFrameRateRanges()
 
     Component.onCompleted: {
+        //cameraList
+        console.log(JSON.stringify(QtMultimedia.availableCameras))
+        cameraList = QtMultimedia.availableCameras
+        for(var index = 0 ; index < cameraList.length ; index++){
+            cameraListModel.append({displayName: cameraList[index].displayName})
+            deviceIdList.push(cameraList[index].deviceId)
+        }
+        cameraListComboBox.textRole = "displayName"
+        cameraListComboBox.model = cameraListModel
+
+        //cameraResolutionList
         cameraResolutionList = camera.supportedViewfinderResolutions()
-        cameraSupportedViewfinderResolutionsComboBox.model = cameraResolutionList
-        cameraSupportedViewfinderFrameRateRangesComboBox.model = cameraFrameRateRangesList
+        for(var index = 0 ; index < cameraResolutionList.length ; index++){
+            var displayText = cameraResolutionList[index].width + "x" + cameraResolutionList[index].height
+            cameraResolutionListModel.append({displayText: displayText})
+        }
+        cameraSupportedViewfinderResolutionsComboBox.textRole = "displayText"
+        cameraSupportedViewfinderResolutionsComboBox.model = cameraResolutionListModel
+
+        //cameraFrameRateRangesList
+        cameraFrameRateRangesListModel.clear()
+        cameraFrameRateRangesList = camera.supportedViewfinderFrameRateRanges(cameraResolutionList[0])
+        for( index = 0 ; index < cameraFrameRateRangesList.length ; index++){
+            displayText = cameraFrameRateRangesList[index].maximumFrameRate;//cameraFrameRateRangesList[index].minimumFrameRate + "\n" + cameraFrameRateRangesList[index].maximumFrameRate
+            cameraFrameRateRangesListModel.append({displayText: displayText})
+        }
+
+        cameraSupportedViewfinderFrameRateRangesComboBox.textRole = "displayText"
+        cameraSupportedViewfinderFrameRateRangesComboBox.model = cameraFrameRateRangesListModel
     }
 
-    cameraSupportedViewfinderResolutionsComboBox.delegate: Item {
-            property var displayText : cameraResolutionList[index].width + "x" + cameraResolutionList[index].height
-            width: parent.width
-            height: 30
-            Text {
-                text: displayText
-            }
-            MouseArea {
-                anchors.fill: parent
-                onClicked: {
-                    //console.log(JSON.stringify(cameraResolutionList[index]))
-                    cameraSupportedViewfinderResolutionsComboBox.currentIndex = index
-                    cameraSupportedViewfinderResolutionsComboBox.displayText = displayText
-                    selectedCameraResolutionIndex = index
-                    cameraFrameRateRangesList = camera.supportedViewfinderFrameRateRanges(cameraResolutionList[selectedCameraResolutionIndex])
-                    cameraSupportedViewfinderFrameRateRangesComboBox.model = cameraFrameRateRangesList
-
-                    camera.stop()
-                    //camera.viewfinder.maximumFrameRate = 30
-                    //camera.viewfinder.minimumFrameRate = 30
-                    camera.viewfinder.resolution = displayText
-                    camera.start()
-                    cameraSupportedViewfinderResolutionsComboBox.popup.close()
-                }
-            }
+    ListModel {
+        id: cameraListModel
     }
-    cameraSupportedViewfinderFrameRateRangesComboBox.delegate: Item {
-        property var displayText : cameraFrameRateRangesList[index].minimumFrameRate + "\n" + cameraFrameRateRangesList[index].maximumFrameRate
-            width: parent.width
-            height: 30
-            Text {
-                text: displayText
-            }
-            MouseArea {
-                anchors.fill: parent
-                onClicked: {
-                    console.log(JSON.stringify(cameraFrameRateRangesList[index]))
-                    cameraSupportedViewfinderFrameRateRangesComboBox.currentIndex = index
-                    cameraSupportedViewfinderFrameRateRangesComboBox.displayText = displayText
-                    selectedCameraFrameRateRangesIndex = index
-
-                    cameraSupportedViewfinderFrameRateRangesComboBox.popup.close()
-                }
-            }
+    ListModel {
+        id: cameraResolutionListModel
+    }
+    ListModel {
+        id: cameraFrameRateRangesListModel
     }
 
     PropertyAnimation {
@@ -86,8 +78,41 @@ CameraSettingForm {
             }
         }
     }
+    cameraSupportedViewfinderResolutionsComboBox.onCurrentIndexChanged: {
+        //console.log(JSON.stringify(cameraResolutionList[index]))
+        var selectedCameraResolutionIndex = cameraSupportedViewfinderResolutionsComboBox.currentIndex
+        print("displayText " + cameraResolutionListModel.get(selectedCameraResolutionIndex).displayText)
 
-    cameraListComboBox.delegate: Item {
+        camera.stop()
+        //camera.viewfinder.maximumFrameRate = 30
+        //camera.viewfinder.minimumFrameRate = 30
+        camera.viewfinder.resolution = cameraResolutionListModel.get(selectedCameraResolutionIndex).displayText
+        camera.start()
+
+        ///////////////
+        cameraFrameRateRangesListModel.clear()
+        cameraFrameRateRangesList = camera.supportedViewfinderFrameRateRanges(cameraResolutionList[selectedCameraResolutionIndex])
+        for(var index = 0 ; index < cameraFrameRateRangesList.length ; index++){
+            var displayText = cameraFrameRateRangesList[index].maximumFrameRate;//cameraFrameRateRangesList[index].minimumFrameRate + "\n" + cameraFrameRateRangesList[index].maximumFrameRate
+            cameraFrameRateRangesListModel.append({displayText: displayText})
+        }
+
+        //cameraSupportedViewfinderFrameRateRangesComboBox.model = cameraFrameRateRangesListModel
+    }
+    cameraSupportedViewfinderFrameRateRangesComboBox.onCurrentIndexChanged: {
+        //console.log(JSON.stringify(cameraFrameRateRangesList[currentIndex]))
+        //cameraSupportedViewfinderFrameRateRangesComboBox.currentIndex = currentIndex
+        //cameraSupportedViewfinderFrameRateRangesComboBox.displayText = displayText
+        var selectedCameraFrameRateRangesIndex = cameraSupportedViewfinderFrameRateRangesComboBox.currentIndex
+        camera.stop()
+        camera.viewfinder.maximumFrameRate = cameraFrameRateRangesListModel.get(selectedCameraFrameRateRangesIndex).displayText
+        camera.start()
+    }
+    cameraListComboBox.onCurrentIndexChanged: {
+        print(deviceIdList[cameraListComboBox.currentIndex])
+        camera.deviceId = deviceIdList[cameraListComboBox.currentIndex]
+    }
+    /*cameraListComboBox.delegate: Item {
         width: parent.width
         height: 30
         Text {
@@ -117,7 +142,7 @@ CameraSettingForm {
                 cameraListComboBox.popup.close()
             }
         }
-    }
+    }*/
 
 
     //NumberAnimation { id: theAnim; target: infoSheet.parent; property: "y"; to: moveTo.y }

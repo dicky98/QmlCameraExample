@@ -1,6 +1,6 @@
 ﻿#include "pixmapimage.h"
 #include <QDebug>
-#include <opencv/cv.hpp>
+//#include <opencv/cv.hpp>
 
 PixmapImage::PixmapImage(QQuickItem *parent) :
     QQuickPaintedItem(parent)
@@ -48,7 +48,7 @@ void PixmapImage::onGetFrame(QImage &image)
             fps = frameCounter;
             frameCounter = 0;
         }
-        qDebug() << fps;
+        //qDebug() << fps;
     }
     else{
         //pixmap.load("C:/Users/Zong-Ye/Desktop/16-1.PNG");

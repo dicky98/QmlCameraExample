@@ -17,7 +17,7 @@
 #pragma comment(lib, "opencv_videoio340d.lib")
 #pragma comment(lib, "opencv_imgproc340d.lib")
 #pragma comment(lib, "opencv_highgui340d.lib")*/
-#pragma comment(lib, "opencv_world340d.lib")
+#pragma comment(lib, "opencv_world310d.lib")
 
 //http://blog.51cto.com/9291927/1975383
 //https://blog.csdn.net/henreash/article/details/8002147

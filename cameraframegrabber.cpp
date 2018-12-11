@@ -1,7 +1,7 @@
 ﻿#include "cameraframegrabber.h"
 #include <QVideoFrame>
 #include <iostream>
-#include <opencv/cv.hpp>
+//#include <opencv/cv.hpp>
 #include <QDebug>
 
 CameraFrameGrabber::CameraFrameGrabber(QObject *parent) :

@@ -37,5 +37,5 @@ DEFINES += QT_DEPRECATED_WARNINGS
 #!isEmpty(target.path): INSTALLS += target
 
 
-INCLUDEPATH += C:\\3rdLibrary\\opencv3.4\\include
-LIBS += -LC:\\3rdLibrary\\opencv3.4\\x64\\vc14\\lib
+#INCLUDEPATH += C:\\3rdLibrary\\opencv3.1\\build\\include
+#LIBS += -LC:\\3rdLibrary\\opencv3.1\\build\\x64\\vc12\\lib

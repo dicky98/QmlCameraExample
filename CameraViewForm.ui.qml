@@ -1,5 +1,5 @@
 ﻿import QtQuick 2.4
-import QtQuick.Controls 2.0
+import QtQuick.Controls 1.5
 import QtMultimedia 5.4
 import PixmapImage 1.0
 

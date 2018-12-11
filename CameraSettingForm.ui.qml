@@ -1,6 +1,6 @@
 ﻿import QtQuick 2.4
-import QtQuick.Controls 2.0
-import QtMultimedia 5.8
+import QtQuick.Controls 1.5
+import QtMultimedia 5.6
 import QtQuick.Layouts 1.3
 
 Item {
@@ -20,7 +20,7 @@ Item {
         opacity: 0.5
         width: parent.width
         height: parent.height
-        color: "white"
+        color: "red"
 
         ColumnLayout {
             width: parent.width
@@ -43,7 +43,7 @@ Item {
                 width: parent.width
                 anchors.horizontalCenter: parent.horizontalCenter
 
-                model: QtMultimedia.availableCameras
+                //model: QtMultimedia.availableCameras
                 currentIndex: 0
 
                 //onCurrentIndexChanged: {}
