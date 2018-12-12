@@ -2,15 +2,15 @@ QT += quick qml multimedia widgets
 
 CONFIG += c++11
 
-SOURCES += main.cpp \
-    test.cpp \
-    cameraframegrabber.cpp \
-    pixmapimage.cpp
+SOURCES += Sources/main.cpp \
+    Sources/cameraframegrabber.cpp \    
+    Sources/pixmapimage.cpp \
+    Sources/test.cpp
 
 HEADERS += \
-    test.h \
-    cameraframegrabber.h \
-    pixmapimage.h
+    include/cameraframegrabber.h \
+    include/pixmapimage.h \
+    include/test.h
 
 RESOURCES += qml.qrc
 
@@ -36,6 +36,6 @@ DEFINES += QT_DEPRECATED_WARNINGS
 #else: unix:!android: target.path = /opt/$${TARGET}/bin
 #!isEmpty(target.path): INSTALLS += target
 
-
+INCLUDEPATH += include
 INCLUDEPATH += C:\\3rdLibrary\\opencv3.1\\build\\include
 LIBS += -LC:\\3rdLibrary\\opencv3.1\\build\\x64\\vc12\\lib

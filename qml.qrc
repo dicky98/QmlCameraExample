@@ -1,12 +1,12 @@
 <RCC>
     <qresource prefix="/">
-        <file>main.qml</file>
-        <file>Page1.qml</file>
-        <file>Page1Form.ui.qml</file>
-        <file>qtquickcontrols2.conf</file>
-        <file>CameraView.qml</file>
-        <file>CameraViewForm.ui.qml</file>
-        <file>CameraSetting.qml</file>
-        <file>CameraSettingForm.ui.qml</file>
+        <file>qml/qtquickcontrols2.conf</file>
+        <file>qml/main.qml</file>
+        <file>qml/Page1.qml</file>
+        <file>qml/Page1Form.ui.qml</file>
+        <file>qml/CameraView.qml</file>
+        <file>qml/CameraViewForm.ui.qml</file>
+        <file>qml/CameraSetting.qml</file>
+        <file>qml/CameraSettingForm.ui.qml</file>
     </qresource>
 </RCC>
