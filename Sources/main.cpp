@@ -1,4 +1,5 @@
-﻿#include <QGuiApplication>
+﻿#include <QResource>
+#include <QGuiApplication>
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
 #include <QQuickView>
@@ -23,6 +24,8 @@
 //https://blog.csdn.net/henreash/article/details/8002147
 int main(int argc, char *argv[])
 {
+    QResource::registerResource("qml.rcc");
+
     QGuiApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
     QGuiApplication app(argc, argv);
     //QGuiApplication::setAttribute(Qt::AA_UseDesktopOpenGL, true);
