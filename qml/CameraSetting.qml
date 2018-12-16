@@ -7,96 +7,64 @@ CameraSettingForm {
     property var deviceIdList: []
     property var cameraResolutionList: []
     property var cameraFrameRateRangesList: []
-    property int selectedResolution
-    //property int selectedCameraResolutionIndex: -1
-    //property int selectedCameraFrameRateRangesIndex: -1
-    //property list cameraFrameRateRangesList: camera.supportedViewfinderFrameRateRanges()
+    property int defultResolution
 
     //console.log(JSON.stringify(QtMultimedia.availableCameras))
     Component.onCompleted: {
-        cameraList = QtMultimedia.availableCameras
-        for(var index = 0 ; index < cameraList.length ; index++){
-            cameraListModel.append({displayName: cameraList[index].displayName})
-            deviceIdList.push(cameraList[index].deviceId)
-        }
+        //cameraListComboBox
         cameraListComboBox.textRole = "displayName"
-        cameraListComboBox.model = cameraListModel
+        cameraListComboBox.model = cameraList
 
-        //cameraResolutionList
-        cameraResolutionList = camera.supportedViewfinderResolutions()
-        for(var index = 0 ; index < cameraResolutionList.length ; index++){
-            var displayText = cameraResolutionList[index].width + "x" + cameraResolutionList[index].height
-            cameraResolutionListModel.append({displayText: displayText})
-            if(camera.viewfinder.resolution === Qt.size( cameraResolutionList[index].width, cameraResolutionList[index].height)){
-                //print("!!")
-                selectedResolution = index
-            }
-        }
+        //cameraSupportedViewfinderResolutionsComboBox
         cameraSupportedViewfinderResolutionsComboBox.textRole = "displayText"
-        cameraSupportedViewfinderResolutionsComboBox.model = cameraResolutionListModel
-        cameraSupportedViewfinderResolutionsComboBox.currentIndex = selectedResolution
-        //cameraSupportedViewfinderResolutionsComboBox.currentText = selectedResolution
-        //console.log(camera.viewfinder.maximumFrameRate)
+        cameraSupportedViewfinderResolutionsComboBox.model = cameraResolutionList
+        cameraSupportedViewfinderResolutionsComboBox.currentIndex = defultResolution
 
-        //cameraFrameRateRangesList
-        cameraFrameRateRangesListModel.clear()
-        cameraFrameRateRangesList = camera.supportedViewfinderFrameRateRanges(cameraResolutionList[selectedResolution])
-        for( index = 0 ; index < cameraFrameRateRangesList.length ; index++){
-            displayText = cameraFrameRateRangesList[index].maximumFrameRate;//cameraFrameRateRangesList[index].minimumFrameRate + "\n" + cameraFrameRateRangesList[index].maximumFrameRate
-            cameraFrameRateRangesListModel.append({displayText: displayText})
-        }
-
+        //cameraSupportedViewfinderFrameRateRangesComboBox
         cameraSupportedViewfinderFrameRateRangesComboBox.textRole = "displayText"
-        cameraSupportedViewfinderFrameRateRangesComboBox.model = cameraFrameRateRangesListModel
-        cameraSupportedViewfinderFrameRateRangesComboBox.currentIndex = 0
+        cameraSupportedViewfinderFrameRateRangesComboBox.model = cameraFrameRateRangesList
 
         ///init
 
     }
 
-    ListModel {
-        id: cameraListModel
-    }
-    ListModel {
-        id: cameraResolutionListModel
-    }
-    ListModel {
-        id: cameraFrameRateRangesListModel
-    }
-
     cameraSupportedViewfinderResolutionsComboBox.onCurrentIndexChanged: {
-        //console.log(JSON.stringify(cameraResolutionList[index]))
-        print("Resolution")
+        print("Resolution Changed")
         var selectedCameraResolutionIndex = cameraSupportedViewfinderResolutionsComboBox.currentIndex
-        print("displayText " + cameraResolutionListModel.get(selectedCameraResolutionIndex).displayText)
-
+        if(selectedCameraResolutionIndex === -1)
+            return
         camera.stop()
-        //camera.viewfinder.maximumFrameRate = 30
-        //camera.viewfinder.minimumFrameRate = 30
-        camera.viewfinder.resolution = cameraResolutionListModel.get(selectedCameraResolutionIndex).displayText
+        camera.viewfinder.resolution = cameraResolutionList[selectedCameraResolutionIndex].displayText
         camera.start()
 
         ///////////////
-        cameraFrameRateRangesListModel.clear()
-        cameraFrameRateRangesList = camera.supportedViewfinderFrameRateRanges(cameraResolutionList[selectedCameraResolutionIndex])
-        for(var index = 0 ; index < cameraFrameRateRangesList.length ; index++){
-            var displayText = cameraFrameRateRangesList[index].maximumFrameRate;//cameraFrameRateRangesList[index].minimumFrameRate + "\n" + cameraFrameRateRangesList[index].maximumFrameRate
-            cameraFrameRateRangesListModel.append({displayText: displayText})
+        cameraFrameRateRangesList = []
+        var cameraFrameRateRangesListPre = camera.supportedViewfinderFrameRateRanges(cameraResolutionList_[selectedCameraResolutionIndex])
+        for(var index = 0 ; index < cameraFrameRateRangesListPre.length ; index++){
+            var displayText = cameraFrameRateRangesListPre[index].maximumFrameRate
+            var maximumFrameRate = cameraFrameRateRangesListPre[index].maximumFrameRate
+            var minimumFrameRate = cameraFrameRateRangesListPre[index].minimumFrameRate
+            cameraFrameRateRangesList.push( { displayText:      parseInt(maximumFrameRate),
+                                              maximumFrameRate: maximumFrameRate,
+                                              minimumFrameRate: minimumFrameRate } )
         }
-
-        //cameraSupportedViewfinderFrameRateRangesComboBox.model = cameraFrameRateRangesListModel
     }
     cameraSupportedViewfinderFrameRateRangesComboBox.onCurrentIndexChanged: {
-        print("FPS")
+        print("Fps Changed")
         var selectedCameraFrameRateRangesIndex = cameraSupportedViewfinderFrameRateRangesComboBox.currentIndex
+        if(selectedCameraFrameRateRangesIndex === -1)
+            return
         camera.stop()
-        camera.viewfinder.maximumFrameRate = cameraFrameRateRangesListModel.get(selectedCameraFrameRateRangesIndex).displayText
-        //console.log(camera.viewfinder.maximumFrameRate)
+        camera.viewfinder.maximumFrameRate = cameraFrameRateRangesList_[selectedCameraFrameRateRangesIndex].displayText
         camera.start()
     }
     cameraListComboBox.onCurrentIndexChanged: {
-        print(deviceIdList[cameraListComboBox.currentIndex])
+        print("DeviceId Changed")
+        camera.stop()
         camera.deviceId = deviceIdList[cameraListComboBox.currentIndex]
+        cameraSupportedViewfinderResolutionsComboBox.currentIndex = 0
+        cameraSupportedViewfinderFrameRateRangesComboBox.currentIndex = 0
+        camera.start()
     }
 
 
@@ -130,7 +98,7 @@ CameraSettingForm {
     function showMenuBtn()
     {
         bShowMenu = !bShowMenu
-        cameraSettingWindowMoveAnim.start();
+        cameraSettingWindowMoveAnim.start()
     }
 
 

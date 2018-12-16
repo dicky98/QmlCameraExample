@@ -12,7 +12,13 @@ ApplicationWindow {
     color: "black"
 
     property var imageSource: 0
-    property string cameraResolution: ""
+    //property string cameraResolution: ""
+    property var cameraList_: []
+    property var deviceIdList_: []
+    property var cameraResolutionList_: []
+    property var cameraFrameRateRangesList_: []
+    property int defultResolution_: 0
+    property bool isNeedToGetCameraList: true
 
     Camera {
         objectName: "camera"
@@ -40,17 +46,50 @@ ApplicationWindow {
         onAvailabilityChanged: {
             if(camera.availability !== Camera.Available)
             {
-                //console.log("Camera not available");
+                console.log("Camera is not available");
             }
             if(camera.availability === Camera.Available)
             {
-                console.log("Camera available");
+                console.log("Camera is available");
             }
         }
+
         onCameraStateChanged: {
             if(camera.cameraState === Camera.ActiveState){
-                console.log("Camera ActiveState");
-                //console.log("2", camera.viewfinder.resolution)
+                //console.log("Camera is ActiveState");
+
+                if(isNeedToGetCameraList){
+                    print("isNeedToGetCameraList")
+                    cameraList_ = QtMultimedia.availableCameras
+
+                    for(var index = 0 ; index < cameraList_.length ; index++){
+                        deviceIdList_.push(cameraList_[index].deviceId)
+                    }
+
+                    //cameraResolutionList
+                    var cameraResolutionList_pre = camera.supportedViewfinderResolutions()
+                    for(var index = 0 ; index < cameraResolutionList_pre.length ; index++){
+                        var displayText = cameraResolutionList_pre[index].width + "x" + cameraResolutionList_pre[index].height
+                        cameraResolutionList_.push({displayText: displayText})
+                        if(camera.viewfinder.resolution === Qt.size( cameraResolutionList_pre[index].width, cameraResolutionList_pre[index].height)){
+                            defultResolution_ = index
+                        }
+                    }
+
+                    //cameraFrameRateRangesList
+                    var cameraFrameRateRangesList_pre = camera.supportedViewfinderFrameRateRanges(cameraResolutionList_[defultResolution_])
+                    for( index = 0 ; index < cameraFrameRateRangesList_pre.length ; index++){
+                        var maximumFrameRate = cameraFrameRateRangesList_pre[index].maximumFrameRate;//cameraFrameRateRangesList[index].minimumFrameRate + "\n" + cameraFrameRateRangesList[index].maximumFrameRate
+                        var minimumFrameRate = cameraFrameRateRangesList_pre[index].minimumFrameRate;
+                        //cameraFrameRateRangesListModel.append({displayText: displayText})
+                        cameraFrameRateRangesList_.push( { displayText:      parseInt(maximumFrameRate),
+                                                           maximumFrameRate: maximumFrameRate,
+                                                           minimumFrameRate: minimumFrameRate } )
+                    }
+
+                    isNeedToGetCameraList = false
+                }
+
             }
             if(camera.cameraState === Camera.UnloadedState){
                 //console.log("Camera disconnect unloaded");
@@ -59,16 +98,16 @@ ApplicationWindow {
 
         onCameraStatusChanged: {
             //console.log(camera.cameraStatus)
-            if(camera.cameraStatus !== Camera.ActiveStatus){
+            if(camera.cameraStatus === Camera.LoadedStatus){
                 //console.log("Camera inactive");
-                //console.log("0", viewfinder.resolution)
             }
 
             if(camera.cameraStatus !== Camera.UnloadedStatus){
                 //console.log("Camera UnloadedStatus");
             }
             if (camera.cameraStatus === Camera.ActiveStatus) {
-                console.log("Camra in active status");
+                //console.log("Camera is ActiveStatus");
+                //console.log("0", viewfinder.resolution)
                 //console.log("1", viewfinder.resolution)
             }
         }
@@ -87,6 +126,11 @@ ApplicationWindow {
         onDisplayNameChanged: {
             console.log("onDisplayNameChanged")
         }
+
+        onDeviceIdChanged: {
+            print("onDeviceIdChanged")
+            isNeedToGetCameraList = true
+        }
     }
 
     CameraView{
@@ -104,9 +148,11 @@ ApplicationWindow {
         moveFrom: Qt.point(0,parent.height)
         moveTo:  Qt.point(0,parent.height - height)
         camera: camera
-        selectedResolution: cameraResolution
-        //anchors.bottom: parent.bottom
-        //opacity: 0
+        cameraList: cameraList_
+        deviceIdList: deviceIdList_
+        cameraResolutionList: cameraResolutionList_
+        cameraFrameRateRangesList: cameraFrameRateRangesList_
+        defultResolution: defultResolution_
     }
 
     Button {
