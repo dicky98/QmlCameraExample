@@ -7,9 +7,11 @@ CameraSettingForm {
     property var deviceIdList: []
     property var cameraResolutionList: []
     property var cameraFrameRateRangesList: []
-    property int defultResolution
+    property int selectedCameraResolutionIndex
+    property int selectedCameraFrameRateRangesIndex
+    property var selectedCameraFps: {"displayText":"", "minimumFrameRate":0, "maximumFrameRate":0}
 
-    //console.log(JSON.stringify(QtMultimedia.availableCameras))
+    //console.log(JSON.stringify(ppp))
     Component.onCompleted: {
         //cameraListComboBox
         cameraListComboBox.textRole = "displayName"
@@ -18,46 +20,85 @@ CameraSettingForm {
         //cameraSupportedViewfinderResolutionsComboBox
         cameraSupportedViewfinderResolutionsComboBox.textRole = "displayText"
         cameraSupportedViewfinderResolutionsComboBox.model = cameraResolutionList
-        cameraSupportedViewfinderResolutionsComboBox.currentIndex = defultResolution
+        cameraSupportedViewfinderResolutionsComboBox.currentIndex = selectedCameraResolutionIndex
 
         //cameraSupportedViewfinderFrameRateRangesComboBox
         cameraSupportedViewfinderFrameRateRangesComboBox.textRole = "displayText"
         cameraSupportedViewfinderFrameRateRangesComboBox.model = cameraFrameRateRangesList
-
+        //cameraSupportedViewfinderFrameRateRangesComboBox.currentIndex = selectedCameraFrameRateRangesIndex
+        selectedCameraFps = cameraFrameRateRangesList[selectedCameraFrameRateRangesIndex]
         ///init
 
     }
 
     cameraSupportedViewfinderResolutionsComboBox.onCurrentIndexChanged: {
-        print("Resolution Changed")
-        var selectedCameraResolutionIndex = cameraSupportedViewfinderResolutionsComboBox.currentIndex
-        if(selectedCameraResolutionIndex === -1)
+        if ( selectedCameraResolutionIndex === -1
+             || selectedCameraResolutionIndex === cameraSupportedViewfinderResolutionsComboBox.currentIndex )
+        {
             return
-        camera.stop()
-        camera.viewfinder.resolution = cameraResolutionList[selectedCameraResolutionIndex].displayText
-        camera.start()
+        }
+        selectedCameraResolutionIndex = cameraSupportedViewfinderResolutionsComboBox.currentIndex
+
+        print("Resolution Changed to", selectedCameraResolutionIndex)
 
         ///////////////
+        var isUseLastResolutionFps = false
         cameraFrameRateRangesList = []
-        var cameraFrameRateRangesListPre = camera.supportedViewfinderFrameRateRanges(cameraResolutionList_[selectedCameraResolutionIndex])
+        var cameraFrameRateRangesListPre = camera.supportedViewfinderFrameRateRanges(cameraResolutionList[selectedCameraResolutionIndex])
         for(var index = 0 ; index < cameraFrameRateRangesListPre.length ; index++){
-            var displayText = cameraFrameRateRangesListPre[index].maximumFrameRate
             var maximumFrameRate = cameraFrameRateRangesListPre[index].maximumFrameRate
             var minimumFrameRate = cameraFrameRateRangesListPre[index].minimumFrameRate
             cameraFrameRateRangesList.push( { displayText:      parseInt(maximumFrameRate),
                                               maximumFrameRate: maximumFrameRate,
                                               minimumFrameRate: minimumFrameRate } )
+            if( selectedCameraFps.maximumFrameRate === maximumFrameRate &&
+                selectedCameraFps.minimumFrameRate === minimumFrameRate ){
+                isUseLastResolutionFps = true
+                selectedCameraFrameRateRangesIndex = index
+            }
         }
-    }
-    cameraSupportedViewfinderFrameRateRangesComboBox.onCurrentIndexChanged: {
-        print("Fps Changed")
-        var selectedCameraFrameRateRangesIndex = cameraSupportedViewfinderFrameRateRangesComboBox.currentIndex
-        if(selectedCameraFrameRateRangesIndex === -1)
-            return
+
+        //if(camera.lockStatus === Camera.Unlocked)
+        camera.searchAndLock()
+        print(camera.lockStatus)
         camera.stop()
-        camera.viewfinder.maximumFrameRate = cameraFrameRateRangesList_[selectedCameraFrameRateRangesIndex].displayText
+        camera.viewfinder.resolution = cameraResolutionList[selectedCameraResolutionIndex].displayText
+        if(isUseLastResolutionFps)
+        {
+            console.log("useLastResolutionFps")
+        }
+        else
+        {
+            console.log("noUseLastResolutionFps")
+            //console.log(JSON.stringify(cameraFrameRateRangesList))
+            //console.log(JSON.stringify(cameraFrameRateRangesList[cameraFrameRateRangesList.length-1]))
+            //console.log(JSON.stringify(cameraFrameRateRangesList[0]))
+            //print(cameraFrameRateRangesList.length-1)
+            selectedCameraFrameRateRangesIndex = (cameraFrameRateRangesList.length-1)
+            camera.viewfinder.maximumFrameRate = cameraFrameRateRangesList[cameraFrameRateRangesList.length-1].maximumFrameRate
+            camera.viewfinder.minimumFrameRate = cameraFrameRateRangesList[cameraFrameRateRangesList.length-1].minimumFrameRate
+            selectedCameraFps = cameraFrameRateRangesList[cameraFrameRateRangesList.length-1]
+        }
         camera.start()
     }
+
+    cameraSupportedViewfinderFrameRateRangesComboBox.onCurrentIndexChanged: {
+        if ( selectedCameraFrameRateRangesIndex === -1
+             || selectedCameraFrameRateRangesIndex === cameraSupportedViewfinderFrameRateRangesComboBox.currentIndex )
+        {
+            return
+        }
+        selectedCameraFrameRateRangesIndex = cameraSupportedViewfinderFrameRateRangesComboBox.currentIndex
+
+        print("Fps Changed to", selectedCameraFrameRateRangesIndex)
+        selectedCameraFps = cameraFrameRateRangesList[selectedCameraFrameRateRangesIndex]
+        selectedCameraFrameRateRangesIndex = selectedCameraFrameRateRangesIndex
+        camera.stop()
+        camera.viewfinder.maximumFrameRate = cameraFrameRateRangesList[selectedCameraFrameRateRangesIndex].maximumFrameRate
+        camera.viewfinder.minimumFrameRate = cameraFrameRateRangesList[selectedCameraFrameRateRangesIndex].minimumFrameRate
+        camera.start()
+    }
+
     cameraListComboBox.onCurrentIndexChanged: {
         print("DeviceId Changed")
         camera.stop()

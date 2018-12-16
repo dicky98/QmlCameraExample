@@ -17,31 +17,25 @@ ApplicationWindow {
     property var deviceIdList_: []
     property var cameraResolutionList_: []
     property var cameraFrameRateRangesList_: []
-    property int defultResolution_: 0
+    property int defultResolutionIndex_: 0
+    property int defultFpsIndex_: 0
     property bool isNeedToGetCameraList: true
 
     Camera {
         objectName: "camera"
         id: camera
-        imageProcessing.whiteBalanceMode: CameraImageProcessing.WhiteBalanceFlash
-        captureMode: Camera.CaptureStillImage //CaptureViewfinder
+
+        imageProcessing {
+            //whiteBalanceMode: CameraImageProcessing.WhiteBalanceManual
+        }
 
         exposure {
-            exposureCompensation: -1.0
-            exposureMode: Camera.ExposurePortrait
+            exposureMode: Camera.ExposureManual
+            //exposureCompensation: -1.0
         }
 
-        flash.mode: Camera.FlashRedEyeReduction
-
-        imageCapture {
-
-            onImageCaptured: {
-                imageSource = preview  // Show the preview in an Image
-                //console.log(preview)
-                //console.log(displayName)
-            }
-
-        }
+        focus.focusMode: Camera.FocusManual
+        flash.mode: Camera.FlashOff
         
         onAvailabilityChanged: {
             if(camera.availability !== Camera.Available)
@@ -72,19 +66,22 @@ ApplicationWindow {
                         var displayText = cameraResolutionList_pre[index].width + "x" + cameraResolutionList_pre[index].height
                         cameraResolutionList_.push({displayText: displayText})
                         if(camera.viewfinder.resolution === Qt.size( cameraResolutionList_pre[index].width, cameraResolutionList_pre[index].height)){
-                            defultResolution_ = index
+                            defultResolutionIndex_ = index
                         }
                     }
 
                     //cameraFrameRateRangesList
-                    var cameraFrameRateRangesList_pre = camera.supportedViewfinderFrameRateRanges(cameraResolutionList_[defultResolution_])
-                    for( index = 0 ; index < cameraFrameRateRangesList_pre.length ; index++){
+                    var cameraFrameRateRangesList_pre = camera.supportedViewfinderFrameRateRanges(cameraResolutionList_[defultResolutionIndex_])
+                    for(var index = 0 ; index < cameraFrameRateRangesList_pre.length ; index++){
                         var maximumFrameRate = cameraFrameRateRangesList_pre[index].maximumFrameRate;//cameraFrameRateRangesList[index].minimumFrameRate + "\n" + cameraFrameRateRangesList[index].maximumFrameRate
                         var minimumFrameRate = cameraFrameRateRangesList_pre[index].minimumFrameRate;
                         //cameraFrameRateRangesListModel.append({displayText: displayText})
                         cameraFrameRateRangesList_.push( { displayText:      parseInt(maximumFrameRate),
                                                            maximumFrameRate: maximumFrameRate,
                                                            minimumFrameRate: minimumFrameRate } )
+                        if(camera.viewfinder.maximumFrameRate === maximumFrameRate){
+                            defultFpsIndex_ = index
+                        }
                     }
 
                     isNeedToGetCameraList = false
@@ -152,7 +149,8 @@ ApplicationWindow {
         deviceIdList: deviceIdList_
         cameraResolutionList: cameraResolutionList_
         cameraFrameRateRangesList: cameraFrameRateRangesList_
-        defultResolution: defultResolution_
+        selectedCameraResolutionIndex: defultResolutionIndex_
+        selectedCameraFrameRateRangesIndex: defultFpsIndex_
     }
 
     Button {
