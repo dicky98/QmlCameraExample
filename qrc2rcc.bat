@@ -1,1 +1,1 @@
-rcc -binary qml.qrc -o qml.rcc
+rcc -binary qml.qrc -o bin/qml.rcc

@@ -6,6 +6,7 @@ import QtQuick.Layouts 1.3
 Item {
     id: cameraSettingItem
     property Camera camera
+    property string cameraResolution
     property alias cameraSettingWindow: cameraSettingWindow
     property alias cameraListComboBox: cameraListComboBox
     property alias cameraSupportedViewfinderResolutionsComboBox: cameraSupportedViewfinderResolutionsComboBox
@@ -67,7 +68,7 @@ Item {
                 ComboBox {
                     id: cameraSupportedViewfinderResolutionsComboBox
                     Layout.fillWidth: true
-                    currentIndex: 0
+                    currentIndex: -1
                 }
             }
 
@@ -78,7 +79,7 @@ Item {
                 ComboBox {
                     id: cameraViewRotateSettingComboBox
                     Layout.fillWidth: true
-                    currentIndex: 0
+                    currentIndex: -1
                 }
             }
 
@@ -89,7 +90,7 @@ Item {
                 ComboBox {
                     id: cameraSupportedViewfinderFrameRateRangesComboBox
                     Layout.fillWidth: true
-                    currentIndex: 0
+                    currentIndex: -1
                 }
             }
 
