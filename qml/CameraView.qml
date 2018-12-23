@@ -2,15 +2,14 @@
 import QtMultimedia 5.4
 
 CameraViewForm {
+    signal open()
     Component.onCompleted: {
     }
 
     function onCppSignal ( image ) {
         //console.log("CppSignal Recieve : " + msg) ;
         //photoPreview.source = image;
-        if(camera.imageCapture.ready)
-            //camera.imageCapture.capture()
-            pixmapImage.setImage( image )
+       
     }
     /*
     property int s: 0
@@ -42,6 +41,7 @@ CameraViewForm {
         anchors.fill: parent
         onClicked: {
             test.myPrint("2")
+            open()
             //cameraOutputView.source = camera
             //camera.imageCapture.capture()
         }

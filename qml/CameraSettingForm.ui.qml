@@ -5,7 +5,6 @@ import QtQuick.Layouts 1.3
 
 Item {
     id: cameraSettingItem
-    property Camera camera
     property string cameraResolution
     property alias cameraSettingWindow: cameraSettingWindow
     property alias cameraListComboBox: cameraListComboBox

@@ -4,6 +4,7 @@
 #include <QQuickPaintedItem>
 #include <QPainter>
 #include <ctime>
+#include <QMutex>
 //#include <QPixmap>
 
 class PixmapImage : public QQuickPaintedItem
@@ -19,7 +20,7 @@ protected:
 private:
     QPixmap pixmap;
     QImage frame;
-
+    QMutex mutex;
     int frameCounter = 0, tick = 0, fps = 0, totalFps=0, avgFpsCount=0;
     std::time_t timeBegin = std::time(0);
 

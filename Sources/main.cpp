@@ -8,10 +8,13 @@
 #include <QDebug>
 
 #include <QCamera>
+#include <QThread>
+#include <QImage>
 
 #include "cameraframegrabber.h"
 #include "test.h"
 #include "pixmapimage.h"
+#include "worker.h"
 
 /*#pragma comment(lib, "opencv_core340d.lib")
 #pragma comment(lib, "opencv_imgcodecs340d.lib")
@@ -22,8 +25,10 @@
 
 //http://blog.51cto.com/9291927/1975383
 //https://blog.csdn.net/henreash/article/details/8002147
+#include <QMetaType>
 int main(int argc, char *argv[])
 {
+    qRegisterMetaType <QImage> ("QImage&" );
     QResource::registerResource("qml.rcc");
 
     QGuiApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
@@ -46,24 +51,21 @@ int main(int argc, char *argv[])
     QObject *rootobject = engine.rootObjects().at(0);
 
     /////////////////////////
-    QCamera *camera_;
-    CameraFrameGrabber* _cameraFrameGrabber;
 
-    QObject *qmlCamera = rootobject->findChild<QObject*>("camera");
     QObject *cameraView = rootobject->findChild<QObject*>("cameraView");
     QObject *pixmapImage = rootobject->findChild<QObject*>("pixmapImage");
-    if(qmlCamera != nullptr && pixmapImage!= nullptr)
-    {
-        camera_ = qvariant_cast<QCamera*>(qmlCamera->property("mediaObject"));
-        _cameraFrameGrabber = new CameraFrameGrabber();
-        camera_->setViewfinder(_cameraFrameGrabber);
-        QObject::connect(_cameraFrameGrabber, SIGNAL(frameAvailable(QImage&)), pixmapImage, SLOT(onGetFrame(QImage&)));
-        //QObject::connect(_cameraFrameGrabber, SIGNAL(frameAvailable(QImage)), cameraView, SLOT(onCppSignal(QVariant)));
-    }
-    else
-    {
-        qDebug() << "not found camera";
-    }
+
+    //camera_ = qvariant_cast<QCamera*>(qmlCamera->property("mediaObject"));
+
+    QThread workerThread;
+    Worker *worker = new Worker;
+    worker->moveToThread(&workerThread);
+    QObject::connect(&workerThread, &QThread::finished, worker, &QObject::deleteLater);
+    QObject::connect(cameraView, SIGNAL(open()), worker, SLOT(doWork()));
+    QObject::connect(worker, SIGNAL(resultReady(QImage&)), pixmapImage, SLOT(onGetFrame(QImage&)));
+    //QObject::connect(worker, &Worker::resultReady, pixmapImage, &PixmapImage::onGetFrame);
+    workerThread.start();
+
 
     /////////////////////////
     //myCamera->start();
